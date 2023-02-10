@@ -31,7 +31,16 @@ class _SwipeActionWidgetState extends State<SwipeActionWidget> {
             left: swipeOffset - _Thumb.width,
             top: 0,
             bottom: 0,
-            child: _Thumb(borderRadius: effectiveBorderRadius),
+            child: GestureDetector(
+              onHorizontalDragUpdate: (details) {
+                setState(() {
+                  swipeOffset += details.delta.dx;
+                });
+              },
+              child: _Thumb(
+                borderRadius: effectiveBorderRadius,
+              ),
+            ),
           ),
         ],
       ),
