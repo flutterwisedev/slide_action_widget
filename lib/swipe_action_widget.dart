@@ -1,7 +1,27 @@
 library swipe_action_widget;
 
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
+import 'package:flutter/material.dart';
+
+class SwipeActionWidget extends StatelessWidget {
+  const SwipeActionWidget({super.key, this.borderRadius});
+
+  final BorderRadius? borderRadius;
+
+  @override
+  Widget build(BuildContext context) {
+    final effectiveBorderRadius = borderRadius ?? BorderRadius.circular(30);
+    return Container(
+      height: 50,
+      decoration: BoxDecoration(
+        borderRadius: effectiveBorderRadius,
+        color: const Color.fromRGBO(247, 230, 184, 1),
+      ),
+      child: const Center(
+        child: Text(
+          'Swipe to place your order',
+          style: TextStyle(fontStyle: FontStyle.italic),
+        ),
+      ),
+    );
+  }
 }
