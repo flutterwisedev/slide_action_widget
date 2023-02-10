@@ -12,7 +12,7 @@ class SwipeActionWidget extends StatefulWidget {
 }
 
 class _SwipeActionWidgetState extends State<SwipeActionWidget> {
-  double swipeOffset = _Thumb.width;
+  double swipeOffset = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,7 @@ class _SwipeActionWidgetState extends State<SwipeActionWidget> {
                 child: const _Foreground(),
               ),
               Positioned(
-                right: constraints.maxWidth - swipeOffset,
+                left: swipeOffset,
                 top: 0,
                 bottom: 0,
                 child: GestureDetector(
@@ -39,8 +39,8 @@ class _SwipeActionWidgetState extends State<SwipeActionWidget> {
                     setState(() {
                       final newOffset = swipeOffset + details.delta.dx;
                       swipeOffset = newOffset.clamp(
-                        _Thumb.width,
-                        constraints.maxWidth,
+                        0,
+                        constraints.maxWidth - _Thumb.width,
                       );
                     });
                   },
@@ -85,7 +85,12 @@ class _SwipeActionClipper extends CustomClipper<Rect> {
 
   @override
   Rect getClip(Size size) {
-    return Rect.fromLTWH(swipeOffset, 0, size.width, size.height);
+    return Rect.fromLTWH(
+      swipeOffset + _Thumb.width,
+      0,
+      size.width,
+      size.height,
+    );
   }
 
   @override
