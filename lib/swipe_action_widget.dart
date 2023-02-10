@@ -12,20 +12,52 @@ class SwipeActionWidget extends StatefulWidget {
 }
 
 class _SwipeActionWidgetState extends State<SwipeActionWidget> {
-  double swipeOffset = 160;
+  double swipeOffset = 80;
 
   @override
   Widget build(BuildContext context) {
     final effectiveBorderRadius =
         widget.borderRadius ?? BorderRadius.circular(30);
-    return Stack(
-      children: [
-        _Background(borderRadius: effectiveBorderRadius),
-        ClipRect(
-          clipper: _SwipeActionClipper(swipeOffset: swipeOffset),
-          child: _Foreground(borderRadius: effectiveBorderRadius),
+    return SizedBox(
+      height: 50,
+      child: Stack(
+        children: [
+          _Background(borderRadius: effectiveBorderRadius),
+          ClipRect(
+            clipper: _SwipeActionClipper(swipeOffset: swipeOffset),
+            child: _Foreground(borderRadius: effectiveBorderRadius),
+          ),
+          Positioned(
+            left: swipeOffset - _Thumb.width,
+            top: 0,
+            bottom: 0,
+            child: _Thumb(borderRadius: effectiveBorderRadius),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Thumb extends StatelessWidget {
+  const _Thumb({super.key, required this.borderRadius});
+
+  final BorderRadius borderRadius;
+
+  static const width = 60.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.only(
+          topLeft: borderRadius.topLeft,
+          bottomLeft: borderRadius.bottomLeft,
         ),
-      ],
+        color: const Color.fromRGBO(230, 171, 86, 1),
+      ),
+      width: width,
+      child: const Icon(Icons.keyboard_double_arrow_right),
     );
   }
 }
@@ -54,7 +86,6 @@ class _Foreground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 50,
       decoration: BoxDecoration(
         borderRadius: borderRadius,
         color: const Color.fromRGBO(247, 230, 184, 1),
@@ -80,7 +111,6 @@ class _Background extends StatelessWidget {
     const borderColor = Color.fromRGBO(174, 198, 163, 1);
     const textColor = Color.fromRGBO(96, 124, 76, 1);
     return Container(
-      height: 50,
       decoration: BoxDecoration(
         borderRadius: borderRadius,
         color: backgroundColor,
