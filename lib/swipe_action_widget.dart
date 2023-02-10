@@ -12,37 +12,44 @@ class SwipeActionWidget extends StatefulWidget {
 }
 
 class _SwipeActionWidgetState extends State<SwipeActionWidget> {
-  double swipeOffset = 80;
+  double swipeOffset = _Thumb.width;
 
   @override
   Widget build(BuildContext context) {
     final effectiveBorderRadius =
         widget.borderRadius ?? BorderRadius.circular(30);
-    return SizedBox(
-      height: 50,
-      child: Stack(
-        children: [
-          _Background(borderRadius: effectiveBorderRadius),
-          ClipRect(
-            clipper: _SwipeActionClipper(swipeOffset: swipeOffset),
-            child: _Foreground(borderRadius: effectiveBorderRadius),
-          ),
-          Positioned(
-            left: swipeOffset - _Thumb.width,
-            top: 0,
-            bottom: 0,
-            child: GestureDetector(
-              onHorizontalDragUpdate: (details) {
-                setState(() {
-                  swipeOffset += details.delta.dx;
-                });
-              },
-              child: _Thumb(
-                borderRadius: effectiveBorderRadius,
+    return ClipRRect(
+      borderRadius: effectiveBorderRadius,
+      child: SizedBox(
+        height: 50,
+        child: LayoutBuilder(builder: (context, constraints) {
+          return Stack(
+            children: [
+              _Background(borderRadius: effectiveBorderRadius),
+              ClipRect(
+                clipper: _SwipeActionClipper(swipeOffset: swipeOffset),
+                child: const _Foreground(),
               ),
-            ),
-          ),
-        ],
+              Positioned(
+                right: constraints.maxWidth - swipeOffset,
+                top: 0,
+                bottom: 0,
+                child: GestureDetector(
+                  onHorizontalDragUpdate: (details) {
+                    setState(() {
+                      final newOffset = swipeOffset + details.delta.dx;
+                      swipeOffset = newOffset.clamp(
+                        _Thumb.width,
+                        constraints.maxWidth,
+                      );
+                    });
+                  },
+                  child: _Thumb(borderRadius: effectiveBorderRadius),
+                ),
+              ),
+            ],
+          );
+        }),
       ),
     );
   }
@@ -88,17 +95,12 @@ class _SwipeActionClipper extends CustomClipper<Rect> {
 }
 
 class _Foreground extends StatelessWidget {
-  const _Foreground({super.key, required this.borderRadius});
-
-  final BorderRadius borderRadius;
+  const _Foreground({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        borderRadius: borderRadius,
-        color: const Color.fromRGBO(247, 230, 184, 1),
-      ),
+      color: const Color.fromRGBO(247, 230, 184, 1),
       child: const Center(
         child: Text(
           'Swipe to place your order',
