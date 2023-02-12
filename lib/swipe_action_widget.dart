@@ -145,7 +145,7 @@ class _Foreground extends StatelessWidget {
       color: const Color.fromRGBO(247, 230, 184, 1),
       child: const Center(
         child: Text(
-          'Swipe to place your order',
+          'Swipe to purchase',
           style: TextStyle(fontStyle: FontStyle.italic),
         ),
       ),
@@ -171,7 +171,7 @@ class _Background extends StatelessWidget {
       ),
       child: const Center(
         child: Text(
-          'Placing your order...',
+          'Purchasing...',
           style: TextStyle(fontStyle: FontStyle.italic, color: textColor),
         ),
       ),
