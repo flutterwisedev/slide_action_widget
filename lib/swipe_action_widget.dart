@@ -35,7 +35,7 @@ class _SwipeActionWidgetState extends State<SwipeActionWidget>
   @override
   Widget build(BuildContext context) {
     final effectiveBorderRadius =
-        widget.borderRadius ?? BorderRadius.circular(30);
+        widget.borderRadius ?? BorderRadius.circular(12);
     return ClipRRect(
       borderRadius: effectiveBorderRadius,
       child: SizedBox(
@@ -108,29 +108,6 @@ class _SwipeActionWidgetState extends State<SwipeActionWidget>
   }
 }
 
-class _Thumb extends StatelessWidget {
-  const _Thumb({super.key, required this.borderRadius});
-
-  final BorderRadius borderRadius;
-
-  static const width = 60.0;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.only(
-          topLeft: borderRadius.topLeft,
-          bottomLeft: borderRadius.bottomLeft,
-        ),
-        color: const Color.fromRGBO(230, 171, 86, 1),
-      ),
-      width: width,
-      child: const Icon(Icons.keyboard_double_arrow_right),
-    );
-  }
-}
-
 class _SwipeActionClipper extends CustomClipper<Rect> {
   const _SwipeActionClipper({required this.swipeOffset});
 
@@ -152,18 +129,38 @@ class _SwipeActionClipper extends CustomClipper<Rect> {
   }
 }
 
+class _Thumb extends StatelessWidget {
+  const _Thumb({super.key, required this.borderRadius});
+
+  final BorderRadius borderRadius;
+
+  static const width = 60.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.only(
+          topLeft: borderRadius.topLeft,
+          bottomLeft: borderRadius.bottomLeft,
+        ),
+        color: Colors.indigo.shade100,
+      ),
+      width: width,
+      child: const Icon(Icons.keyboard_double_arrow_right),
+    );
+  }
+}
+
 class _Foreground extends StatelessWidget {
   const _Foreground({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color.fromRGBO(247, 230, 184, 1),
+      color: Colors.amber[200],
       child: const Center(
-        child: Text(
-          'Swipe to purchase',
-          style: TextStyle(fontStyle: FontStyle.italic),
-        ),
+        child: Text('Slide to purchase'),
       ),
     );
   }
@@ -176,16 +173,16 @@ class _Background extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const backgroundColor = Color.fromRGBO(240, 248, 236, 1);
-    const borderColor = Color.fromRGBO(174, 198, 163, 1);
-    const textColor = Color.fromRGBO(96, 124, 76, 1);
+    final backgroundColor = Colors.green[50];
+    final borderColor = Colors.green[400]!;
+    final textColor = Colors.green[800];
     return Container(
       decoration: BoxDecoration(
         borderRadius: borderRadius,
         color: backgroundColor,
         border: Border.all(color: borderColor, width: 1),
       ),
-      child: const Center(
+      child: Center(
         child: Text(
           'Purchasing...',
           style: TextStyle(fontStyle: FontStyle.italic, color: textColor),
