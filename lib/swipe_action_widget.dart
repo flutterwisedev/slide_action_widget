@@ -57,6 +57,14 @@ class _SwipeActionWidgetState extends State<SwipeActionWidget>
                 builder: (context, child) {
                   final swipeOffset =
                       _swipeOffsetController.value * endPosition;
+                  void _cancel() {
+                    _swipeOffsetController.animateTo(
+                      0,
+                      curve: Curves.bounceOut,
+                      duration: const Duration(milliseconds: 750),
+                    );
+                  }
+
                   return Positioned(
                     left: swipeOffset,
                     top: 0,
@@ -68,6 +76,8 @@ class _SwipeActionWidgetState extends State<SwipeActionWidget>
                         final newOffset = swipeOffset + details.delta.dx;
                         _swipeOffsetController.value = newOffset / endPosition;
                       },
+                      onHorizontalDragEnd: (details) => _cancel(),
+                      onHorizontalDragCancel: () => _cancel(),
                       child: child,
                     ),
                   );
