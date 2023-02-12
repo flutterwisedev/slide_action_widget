@@ -11,8 +11,21 @@ class SwipeActionWidget extends StatefulWidget {
   State<SwipeActionWidget> createState() => _SwipeActionWidgetState();
 }
 
-class _SwipeActionWidgetState extends State<SwipeActionWidget> {
-  double swipeOffset = 0;
+class _SwipeActionWidgetState extends State<SwipeActionWidget>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _swipeOffsetController;
+
+  @override
+  void initState() {
+    super.initState();
+    _swipeOffsetController = AnimationController(vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _swipeOffsetController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,29 +36,43 @@ class _SwipeActionWidgetState extends State<SwipeActionWidget> {
       child: SizedBox(
         height: 50,
         child: LayoutBuilder(builder: (context, constraints) {
+          final endPosition = constraints.maxWidth - _Thumb.width;
           return Stack(
             children: [
               _Background(borderRadius: effectiveBorderRadius),
-              ClipRect(
-                clipper: _SwipeActionClipper(swipeOffset: swipeOffset),
+              AnimatedBuilder(
+                animation: _swipeOffsetController,
+                builder: (context, child) {
+                  return ClipRect(
+                    clipper: _SwipeActionClipper(
+                      swipeOffset: _swipeOffsetController.value * endPosition,
+                    ),
+                    child: child,
+                  );
+                },
                 child: const _Foreground(),
               ),
-              Positioned(
-                left: swipeOffset,
-                top: 0,
-                bottom: 0,
-                child: GestureDetector(
-                  onHorizontalDragUpdate: (details) {
-                    setState(() {
-                      final newOffset = swipeOffset + details.delta.dx;
-                      swipeOffset = newOffset.clamp(
-                        0,
-                        constraints.maxWidth - _Thumb.width,
-                      );
-                    });
-                  },
-                  child: _Thumb(borderRadius: effectiveBorderRadius),
-                ),
+              AnimatedBuilder(
+                animation: _swipeOffsetController,
+                builder: (context, child) {
+                  final swipeOffset =
+                      _swipeOffsetController.value * endPosition;
+                  return Positioned(
+                    left: swipeOffset,
+                    top: 0,
+                    bottom: 0,
+                    child: GestureDetector(
+                      onHorizontalDragUpdate: (details) {
+                        final swipeOffset =
+                            _swipeOffsetController.value * endPosition;
+                        final newOffset = swipeOffset + details.delta.dx;
+                        _swipeOffsetController.value = newOffset / endPosition;
+                      },
+                      child: child,
+                    ),
+                  );
+                },
+                child: _Thumb(borderRadius: effectiveBorderRadius),
               ),
             ],
           );
