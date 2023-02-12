@@ -23,10 +23,14 @@ class Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: Padding(
-        padding: EdgeInsets.all(8),
-        child: SwipeActionWidget(),
+        padding: const EdgeInsets.all(8),
+        child: SwipeActionWidget(
+          onComplete: () {
+            print('completed');
+          },
+        ),
       ),
     );
   }

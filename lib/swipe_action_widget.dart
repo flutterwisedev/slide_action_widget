@@ -3,9 +3,14 @@ library swipe_action_widget;
 import 'package:flutter/material.dart';
 
 class SwipeActionWidget extends StatefulWidget {
-  const SwipeActionWidget({super.key, this.borderRadius});
+  const SwipeActionWidget({
+    super.key,
+    this.borderRadius,
+    required this.onComplete,
+  });
 
   final BorderRadius? borderRadius;
+  final VoidCallback onComplete;
 
   @override
   State<SwipeActionWidget> createState() => _SwipeActionWidgetState();
@@ -57,7 +62,7 @@ class _SwipeActionWidgetState extends State<SwipeActionWidget>
                 builder: (context, child) {
                   final swipeOffset =
                       _swipeOffsetController.value * endPosition;
-                  void _cancel() {
+                  void bounceBack() {
                     _swipeOffsetController.animateTo(
                       0,
                       curve: Curves.bounceOut,
@@ -76,8 +81,19 @@ class _SwipeActionWidgetState extends State<SwipeActionWidget>
                         final newOffset = swipeOffset + details.delta.dx;
                         _swipeOffsetController.value = newOffset / endPosition;
                       },
-                      onHorizontalDragEnd: (details) => _cancel(),
-                      onHorizontalDragCancel: () => _cancel(),
+                      onHorizontalDragEnd: (details) {
+                        if (_swipeOffsetController.value > .9) {
+                          widget.onComplete();
+                          _swipeOffsetController.animateTo(
+                            1,
+                            curve: Curves.linear,
+                            duration: const Duration(milliseconds: 200),
+                          );
+                        } else {
+                          bounceBack();
+                        }
+                      },
+                      onHorizontalDragCancel: () => bounceBack(),
                       child: child,
                     ),
                   );
