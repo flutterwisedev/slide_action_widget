@@ -28,7 +28,7 @@ class Body extends StatelessWidget {
         padding: const EdgeInsets.all(8),
         child: SlideActionWidget(
           onComplete: () {
-            print('completed');
+            print('Completed');
           },
         ),
       ),

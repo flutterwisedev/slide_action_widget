@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 
 class SlideActionBackground extends StatelessWidget {
-  const SlideActionBackground({super.key, required this.borderRadius});
+  const SlideActionBackground({
+    super.key,
+    required this.text,
+    required this.borderRadius,
+  });
 
   final BorderRadius borderRadius;
+  final String text;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +23,7 @@ class SlideActionBackground extends StatelessWidget {
       ),
       child: Center(
         child: Text(
-          'Purchasing...',
+          text,
           style: TextStyle(fontStyle: FontStyle.italic, color: textColor),
         ),
       ),

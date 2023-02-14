@@ -10,23 +10,124 @@ export 'src/background.dart';
 export 'src/foreground.dart';
 export 'src/thumb.dart';
 
+/// A [Widget] that allows the user to slide a [thumb] across a [foreground],
+/// slowly revealing the [background], and then enacting [onComplete] after
+/// releasing the [thumb] in the end position.
 class SlideActionWidget extends StatefulWidget {
-  const SlideActionWidget({
+  /// Creates the default [SlideActionWidget].
+  ///
+  /// [onComplete] is called when the user releases the [thumb] within 10% of
+  /// the end of the slide. Otherwise, the [thumb] will snap back to the
+  /// starting position.
+  ///
+  /// Example:
+  /// ```dart
+  /// SlideActionWidget(
+  ///   backgroundText: 'Purchasing...',
+  ///   foregroundText: 'Slide to purchase',
+  ///   onComplete: () {
+  ///     print('Purchased');
+  ///   },
+  /// ),
+  /// ```
+  SlideActionWidget({
     super.key,
-    this.borderRadius,
+    String backgroundText = 'Purchasing...',
+    this.borderRadius = const BorderRadius.all(Radius.circular(12)),
+    String foregroundText = 'Slide to purchase',
+    this.height = 50,
     required this.onComplete,
+    this.snapCurve = Curves.bounceOut,
     this.thumbWidth = 60,
-  });
+  })  : background = SlideActionBackground(
+          borderRadius: borderRadius,
+          text: backgroundText,
+        ),
+        foreground = SlideActionForeground(text: foregroundText),
+        thumb = SlideActionThumb(borderRadius: borderRadius, width: thumbWidth);
 
-  const SlideActionWidget.custom({
+  /// Useful for creating a [SlideActionWidget] with a custom
+  /// [SlideActionBackground], [SlideActionForeground], or [SlideActionThumb].
+  ///
+  /// Example:
+  /// ```dart
+  /// SlideActionWidget.custom(
+  ///   background: Container(
+  ///     color: Colors.red.shade200,
+  ///     child: Center(
+  ///       child: Text(
+  ///         'Deleting...',
+  ///         style: TextStyle(
+  ///           color: Colors.red.shade900,
+  ///           fontStyle: FontStyle.italic,
+  ///         ),
+  ///       ),
+  ///     ),
+  ///   ),
+  ///   foreground: Container(
+  ///     color: Colors.orangeAccent.shade100,
+  ///     child: const Center(child: Text('Slide to delete')),
+  ///   ),
+  ///   thumb: SlideActionThumb(
+  ///     width: 60,
+  ///     color: Colors.red.shade300,
+  ///     borderRadius: BorderRadius.circular(12),
+  ///     icon: const Icon(Icons.delete),
+  ///   ),
+  ///   onComplete: () {
+  ///     print('Deleted');
+  ///   },
+  /// ),
+  SlideActionWidget.custom({
     super.key,
-    this.borderRadius,
+    Widget? background,
+    this.borderRadius = const BorderRadius.all(Radius.circular(12)),
+    Widget? foreground,
+    this.height = 50,
     required this.onComplete,
-    required this.thumbWidth,
-  });
+    this.snapCurve = Curves.bounceOut,
+    Widget? thumb,
+    this.thumbWidth = 60,
+  })  : background = background ??
+            SlideActionBackground(
+              borderRadius: borderRadius,
+              text: 'Purchasing...',
+            ),
+        foreground = foreground ??
+            const SlideActionForeground(text: 'Slide to purchase'),
+        thumb = thumb ??
+            SlideActionThumb(borderRadius: borderRadius, width: thumbWidth);
 
-  final BorderRadius? borderRadius;
+  /// The widget displayed behind the [foreground].
+  ///
+  /// It is revealed as the user drags the [thumb] to the end position.
+  final Widget background;
+
+  /// The border radius of the [background], [foreground], and [thumb].
+  final BorderRadius borderRadius;
+
+  /// The widget displayed in front of the [background].
+  ///
+  /// It is hidden as the user drags the [thumb] to the end position.
+  final Widget foreground;
+
+  /// The height of the [SlideActionWidget].
+  final double height;
+
+  /// Called when the user releases the [thumb] within 10% of the end of the
+  /// end position.
   final VoidCallback onComplete;
+
+  /// The curve used to animate the [thumb] back to the starting position after
+  /// the user releases the [thumb], assuming they didn't slide it all the way
+  /// across.
+  final Curve snapCurve;
+
+  /// The [Widget] that the user drags from start to finish to complete the
+  /// action.
+  final Widget thumb;
+
+  /// The width of the [thumb].
   final double thumbWidth;
 
   @override
@@ -51,17 +152,15 @@ class _SlideActionWidgetState extends State<SlideActionWidget>
 
   @override
   Widget build(BuildContext context) {
-    final effectiveBorderRadius =
-        widget.borderRadius ?? BorderRadius.circular(12);
     return SizedBox(
-      height: 50,
+      height: widget.height,
       child: ClipRRect(
-        borderRadius: effectiveBorderRadius,
+        borderRadius: widget.borderRadius,
         child: LayoutBuilder(builder: (context, constraints) {
           final endPosition = constraints.maxWidth - widget.thumbWidth;
           return Stack(
             children: [
-              SlideActionBackground(borderRadius: effectiveBorderRadius),
+              widget.background,
               AnimatedBuilder(
                 animation: _slideOffsetController,
                 builder: (context, child) {
@@ -73,17 +172,17 @@ class _SlideActionWidgetState extends State<SlideActionWidget>
                     child: child,
                   );
                 },
-                child: const SlideActionForeground(),
+                child: widget.foreground,
               ),
               AnimatedBuilder(
                 animation: _slideOffsetController,
                 builder: (context, child) {
                   final slideOffset =
                       _slideOffsetController.value * endPosition;
-                  void bounceBack() {
+                  void snapBack() {
                     _slideOffsetController.animateTo(
                       0,
-                      curve: Curves.bounceOut,
+                      curve: widget.snapCurve,
                       duration: const Duration(milliseconds: 750),
                     );
                   }
@@ -108,18 +207,15 @@ class _SlideActionWidgetState extends State<SlideActionWidget>
                             duration: const Duration(milliseconds: 200),
                           );
                         } else {
-                          bounceBack();
+                          snapBack();
                         }
                       },
-                      onHorizontalDragCancel: () => bounceBack(),
+                      onHorizontalDragCancel: () => snapBack(),
                       child: child,
                     ),
                   );
                 },
-                child: SlideActionThumb(
-                  borderRadius: effectiveBorderRadius,
-                  width: widget.thumbWidth,
-                ),
+                child: widget.thumb,
               ),
             ],
           );
