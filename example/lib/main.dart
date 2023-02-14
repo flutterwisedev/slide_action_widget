@@ -26,10 +26,15 @@ class Body extends StatelessWidget {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(8),
-        child: SlideActionWidget(
-          onComplete: () {
-            print('Completed');
-          },
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 500),
+          child: SlideActionWidget(
+            backgroundText: 'Purchasing...',
+            foregroundText: 'Slide to purchase',
+            onComplete: () {
+              print('Purchased');
+            },
+          ),
         ),
       ),
     );
