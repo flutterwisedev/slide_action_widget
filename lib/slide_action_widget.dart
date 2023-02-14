@@ -1,9 +1,9 @@
-library swipe_action_widget;
+library slide_action_widget;
 
 import 'package:flutter/material.dart';
 
-class SwipeActionWidget extends StatefulWidget {
-  const SwipeActionWidget({
+class SlideActionWidget extends StatefulWidget {
+  const SlideActionWidget({
     super.key,
     this.borderRadius,
     required this.onComplete,
@@ -13,22 +13,22 @@ class SwipeActionWidget extends StatefulWidget {
   final VoidCallback onComplete;
 
   @override
-  State<SwipeActionWidget> createState() => _SwipeActionWidgetState();
+  State<SlideActionWidget> createState() => _SlideActionWidgetState();
 }
 
-class _SwipeActionWidgetState extends State<SwipeActionWidget>
+class _SlideActionWidgetState extends State<SlideActionWidget>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _swipeOffsetController;
+  late final AnimationController _slideOffsetController;
 
   @override
   void initState() {
     super.initState();
-    _swipeOffsetController = AnimationController(vsync: this);
+    _slideOffsetController = AnimationController(vsync: this);
   }
 
   @override
   void dispose() {
-    _swipeOffsetController.dispose();
+    _slideOffsetController.dispose();
     super.dispose();
   }
 
@@ -46,11 +46,11 @@ class _SwipeActionWidgetState extends State<SwipeActionWidget>
             children: [
               _Background(borderRadius: effectiveBorderRadius),
               AnimatedBuilder(
-                animation: _swipeOffsetController,
+                animation: _slideOffsetController,
                 builder: (context, child) {
                   return ClipRect(
-                    clipper: _SwipeActionClipper(
-                      clipOffset: _swipeOffsetController.value * endPosition +
+                    clipper: _SlideActionClipper(
+                      clipOffset: _slideOffsetController.value * endPosition +
                           _Thumb.width,
                     ),
                     child: child,
@@ -59,12 +59,12 @@ class _SwipeActionWidgetState extends State<SwipeActionWidget>
                 child: const _Foreground(),
               ),
               AnimatedBuilder(
-                animation: _swipeOffsetController,
+                animation: _slideOffsetController,
                 builder: (context, child) {
-                  final swipeOffset =
-                      _swipeOffsetController.value * endPosition;
+                  final slideOffset =
+                      _slideOffsetController.value * endPosition;
                   void bounceBack() {
-                    _swipeOffsetController.animateTo(
+                    _slideOffsetController.animateTo(
                       0,
                       curve: Curves.bounceOut,
                       duration: const Duration(milliseconds: 750),
@@ -72,20 +72,20 @@ class _SwipeActionWidgetState extends State<SwipeActionWidget>
                   }
 
                   return Positioned(
-                    left: swipeOffset,
+                    left: slideOffset,
                     top: 0,
                     bottom: 0,
                     child: GestureDetector(
                       onHorizontalDragUpdate: (details) {
-                        final swipeOffset =
-                            _swipeOffsetController.value * endPosition;
-                        final newOffset = swipeOffset + details.delta.dx;
-                        _swipeOffsetController.value = newOffset / endPosition;
+                        final slideOffset =
+                            _slideOffsetController.value * endPosition;
+                        final newOffset = slideOffset + details.delta.dx;
+                        _slideOffsetController.value = newOffset / endPosition;
                       },
                       onHorizontalDragEnd: (details) {
-                        if (_swipeOffsetController.value > .9) {
+                        if (_slideOffsetController.value > .9) {
                           widget.onComplete();
-                          _swipeOffsetController.animateTo(
+                          _slideOffsetController.animateTo(
                             1,
                             curve: Curves.linear,
                             duration: const Duration(milliseconds: 200),
@@ -109,8 +109,8 @@ class _SwipeActionWidgetState extends State<SwipeActionWidget>
   }
 }
 
-class _SwipeActionClipper extends CustomClipper<Rect> {
-  const _SwipeActionClipper({required this.clipOffset});
+class _SlideActionClipper extends CustomClipper<Rect> {
+  const _SlideActionClipper({required this.clipOffset});
 
   final double clipOffset;
 
@@ -120,7 +120,7 @@ class _SwipeActionClipper extends CustomClipper<Rect> {
   }
 
   @override
-  bool shouldReclip(_SwipeActionClipper oldClipper) {
+  bool shouldReclip(_SlideActionClipper oldClipper) {
     return oldClipper.clipOffset != clipOffset;
   }
 }
