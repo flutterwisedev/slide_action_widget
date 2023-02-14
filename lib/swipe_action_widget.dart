@@ -50,7 +50,8 @@ class _SwipeActionWidgetState extends State<SwipeActionWidget>
                 builder: (context, child) {
                   return ClipRect(
                     clipper: _SwipeActionClipper(
-                      swipeOffset: _swipeOffsetController.value * endPosition,
+                      clipOffset: _swipeOffsetController.value * endPosition +
+                          _Thumb.width,
                     ),
                     child: child,
                   );
@@ -109,23 +110,18 @@ class _SwipeActionWidgetState extends State<SwipeActionWidget>
 }
 
 class _SwipeActionClipper extends CustomClipper<Rect> {
-  const _SwipeActionClipper({required this.swipeOffset});
+  const _SwipeActionClipper({required this.clipOffset});
 
-  final double swipeOffset;
+  final double clipOffset;
 
   @override
   Rect getClip(Size size) {
-    return Rect.fromLTWH(
-      swipeOffset + _Thumb.width,
-      0,
-      size.width,
-      size.height,
-    );
+    return Rect.fromLTWH(clipOffset, 0, size.width, size.height);
   }
 
   @override
   bool shouldReclip(_SwipeActionClipper oldClipper) {
-    return oldClipper.swipeOffset != swipeOffset;
+    return oldClipper.clipOffset != clipOffset;
   }
 }
 
