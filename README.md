@@ -1,39 +1,51 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+## slide_action_widget
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages).
+Slide to complete an action.
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages).
--->
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
-
-## Features
-
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+![slide](https://user-images.githubusercontent.com/125212731/219509996-adc603a1-a077-4476-b061-2dc513a9ad09.gif)
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
+### Standard
 ```dart
-const like = 'sample';
+SlideActionWidget(
+  backgroundText: 'Purchasing...',
+  foregroundText: 'Slide to purchase',
+  onComplete: () {
+    print('Purchased');
+  },
+)
 ```
 
-## Additional information
+### Custom
+```dart
+SlideActionWidget.custom(
+  background: Container(
+    color: Colors.red.shade100,
+    child: Center(
+      child: Text(
+        'Deleting...',
+        style: TextStyle(
+          color: Colors.red.shade900,
+          fontStyle: FontStyle.italic,
+        ),
+      ),
+    ),
+  ),
+  foreground: Container(
+    color: Colors.orangeAccent.shade100,
+    child: const Center(child: Text('Slide to delete')),
+  ),
+  thumb: SlideActionThumb(
+    width: 60,
+    color: Colors.red.shade300,
+    borderRadius: BorderRadius.circular(12),
+    icon: const Icon(Icons.delete),
+  ),
+  onComplete: () {
+    print('Deleted');
+  },
+)
+```
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+https://user-images.githubusercontent.com/125212731/219510163-56833c25-cf9b-4be1-b530-afd9a7c76175.mov
