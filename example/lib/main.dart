@@ -49,7 +49,6 @@ class Body extends StatelessWidget {
                 },
               ),
               const SizedBox(height: 12),
-
               // Example #3
               SlideActionWidget.custom(
                 background: Container(
